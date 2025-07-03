@@ -31,17 +31,23 @@ Rfam database (version 14.10) alongside INFERNAL software (version 1.1.4) were u
 #### Execution Steps:
 
 To predict ncRNAs, tRNAs, and rRNAs from genomic data, run the following command:
-
+Prediction of tRNA Sequences and Structures
 ```bash
-nextflow run all_nc.nf \
--with-trace -resume \
---queueq xhhctdnormal \
---genome_ddir /work/home/shuziqiang/xiaotai/animals43_result/genome \
--qs 60
+tRNAscan-SE -E -o name_genome.tRNA -f name_genome.structure --thread 16 name_genome.fasta
 ```
-
-- Replace `/work/home/shuziqiang/xiaotai/animals43_result/genome` with the path to the genome files.
-- Results will be outputted to `Result/01.nc`.
+Generate GFF Annotation File for tRNA
+```bash
+perl ../HerbalRDB-main/bin/tRNAscan/tRNAscan_to_gff3.pl name_genome.tRNA name_genome.structure > name_genome.tRNA.gff
+```
+Generate Small RNA Result Information for the Species
+```bash
+python  ../HerbalRDB-main/bin/cmscan/Run_cmscan.py -r name_genome.fasta -o ./ -c cmscan -Rfam_cm Rfam.cm -Rfam_clanin Rfam.clanin -s  name -cm_tpye cut_ga 
+```
+Generate GFF Annotation Files for miRNA, snRNA, and rRNA
+```bash
+python  ../HerbalRDB-main/bin/cmscan/cmscan_ncRNA2gff.py -i name.tblout  -o ./ -t rfam_anno.xls -s name
+```
+- Replace `name_genome` with the path to the genome files.
 
 ---
 
